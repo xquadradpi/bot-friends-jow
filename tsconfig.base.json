@@ -15,7 +15,8 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "paths": {
-      "@bot-friends-jow/api-types": ["libs/api-types/src/index.ts"]
+      "@bot-friends-jow/api-types": ["libs/api-types/src/index.ts"],
+      "@bot-friends-jow/api-client": ["libs/api-client/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

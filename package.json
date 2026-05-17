@@ -2,7 +2,9 @@
   "name": "@bot-friends-jow/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "generate": "ts-node scripts/generate-api-client.ts"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -51,6 +53,7 @@
     "jsdom": "~22.1.0",
     "nx": "22.7.2",
     "openapi-typescript": "^7.13.0",
+    "orval": "^8.10.0",
     "prettier": "~3.6.2",
     "sass": "^1.70.0",
     "ts-jest": "^29.4.0",

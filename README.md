@@ -1,6 +1,6 @@
 # bot-friends-jow
 
-An NX monorepo with a NestJS API (`api`) and a Vue 3 frontend (`ui`).
+An NX monorepo with a NestJS API (`api`) and a Vue 3 chat frontend (`ui`). The chatbot is powered by an LLM via [OpenRouter](https://openrouter.ai).
 
 ## Project structure
 
@@ -8,21 +8,33 @@ An NX monorepo with a NestJS API (`api`) and a Vue 3 frontend (`ui`).
 apps/
   api/       NestJS backend (port 3000, prefix /api)
   api-e2e/   Playwright E2E tests for the API
-  ui/        Vue 3 frontend (Vite)
+  ui/        Vue 3 frontend (Vite, port 4200)
   ui-e2e/    Playwright E2E tests for the UI
 libs/
   api-types/ Auto-generated TypeScript types from the OpenAPI spec
+  api-client/ Auto-generated typed HTTP client (orval)
+scripts/
+  generate-api-client.ts  Orchestrates OpenAPI export + client generation
 ```
 
 ## Prerequisites
 
 - Node.js (see `.nvmrc` or `package.json` for version)
 - npm
+- An [OpenRouter](https://openrouter.ai) API key
 
 ## Setup
 
 ```bash
 npm install
+```
+
+Create a `.env` file in the project root:
+
+```env
+OPENROUTER_API_KEY=sk-or-...
+# optional — falls back to in-memory cache if not set
+REDIS_URL=redis://localhost:6379
 ```
 
 ## Running the apps
@@ -39,7 +51,7 @@ npx nx run-many -t serve --all
 npx nx serve api
 ```
 
-The API will be available at `http://localhost:3000/api`.
+Available at `http://localhost:3000/api`. Swagger UI at `http://localhost:3000/api/docs`.
 
 ### UI only
 
@@ -47,25 +59,17 @@ The API will be available at `http://localhost:3000/api`.
 npx nx serve ui
 ```
 
-The UI will be available at `http://localhost:4200`.
+Available at `http://localhost:4200`.
 
 ## Caching (Redis)
 
-The API uses `@nestjs/cache-manager` for caching. By default it runs with an **in-memory store** — no external service required.
+The API uses `@nestjs/cache-manager`. By default it runs with an **in-memory store** — no external service required.
 
-To use **Redis** instead, set the `REDIS_URL` environment variable before starting the API:
+To use **Redis**, set `REDIS_URL` in your `.env` or environment:
 
 ```bash
 REDIS_URL=redis://localhost:6379 npx nx serve api
 ```
-
-Or add it to a `.env` file in the project root:
-
-```env
-REDIS_URL=redis://localhost:6379
-```
-
-If `REDIS_URL` is not set, the app falls back to in-memory caching automatically.
 
 ### Starting Redis with Docker
 
@@ -73,46 +77,50 @@ If `REDIS_URL` is not set, the app falls back to in-memory caching automatically
 docker run -d -p 6379:6379 redis:7-alpine
 ```
 
-## Swagger & API types
+## API Client generation
 
-The API exposes a Swagger UI at `http://localhost:3000/api/docs` when running in development.
+The project uses [orval](https://orval.dev) to generate a fully typed HTTP client from the OpenAPI spec.
 
-### Generate TypeScript types for the UI
-
-Types are auto-generated from the OpenAPI spec into `libs/api-types` and importable as `@bot-friends-jow/api-types`.
+### Generate everything
 
 ```bash
-npx nx run api-types:generate
+npm run generate
 ```
 
-This runs two steps automatically:
-1. `api:export-schema` — boots the NestJS app without listening and writes `openapi.json` to the workspace root
-2. `api-types:generate` — runs `openapi-typescript` to generate `libs/api-types/src/generated.ts`
+This runs three steps:
 
-### Adding a DTO to the spec
+1. `api:export-schema` — boots the NestJS app and writes `openapi.json` to the workspace root
+2. `api-client:generate` — runs orval to generate typed services and models into `libs/api-client/src/generated/`
+3. `nx format:write` — formats the generated files
 
-Decorate your DTO class with `@ApiProperty()` so it appears in the spec:
+### Generated output
+
+```
+libs/api-client/src/generated/
+  chat/
+    chat.ts           ← chatControllerGetHistory(), chatControllerSendMessage()
+  models/
+    chatHistoryDto.ts
+    chatMessageDto.ts
+    chatResponseDto.ts
+```
+
+### Using the client in the UI
 
 ```typescript
-import { ApiProperty } from '@nestjs/swagger';
+import { chatControllerSendMessage } from '@bot-friends-jow/api-client';
 
-export class CreateUserDto {
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  email: string;
-}
+const response = await chatControllerSendMessage({
+  body: { message: 'Hallo!', userId },
+});
 ```
 
-After adding DTOs, re-run `npx nx run api-types:generate`.
-
-### Using types in the UI
+### Using raw types only
 
 ```typescript
 import type { ApiSchemas } from '@bot-friends-jow/api-types';
 
-type User = ApiSchemas['CreateUserDto'];
+type HistoryEntry = ApiSchemas['ChatHistoryDto'];
 ```
 
 ## Building for production
@@ -155,7 +163,3 @@ npx nx show project api --web
 # Visualize the project graph
 npx nx graph
 ```
-
-
-## Keys
-openrouter.ai key: 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
