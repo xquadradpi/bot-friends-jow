@@ -17,7 +17,7 @@ scripts/
 
 ## Prerequisites
 
-- Node.js (see `.nvmrc` or `package.json` for version)
+- Node.js 20+
 - npm
 - An [OpenRouter](https://openrouter.ai) API key
 
@@ -131,9 +131,6 @@ Output is written to `dist/apps/<app-name>`.
 Integration tests live in `apps/api/src/**/*.spec.ts` and use the NestJS testing module with supertest — no running server required.
 
 ```bash
-# Run all tests
-npx nx run-many -t test --all
-
 # Run API tests only
 npx nx test api
 
