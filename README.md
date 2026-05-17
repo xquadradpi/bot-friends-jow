@@ -147,3 +147,27 @@ npx nx show project api --web
 # Visualize the project graph
 npx nx graph
 ```
+
+---
+
+## Gedanken zur Herangehensweise
+
+### Monorepo-Struktur
+
+Das Projekt ist als NX-Monorepo aufgebaut, um Backend und Frontend in einem gemeinsamen Repository zu verwalten. Das erleichtert die gemeinsame Nutzung von Typen und ermöglicht es, den API-Client direkt aus der laufenden NestJS-Applikation zu generieren — ohne manuelle Synchronisation zwischen zwei Repositories.
+
+### Typsicherheit zwischen Frontend und Backend
+
+Ein zentrales Ziel war, dass Frontend und Backend dieselben Typen verwenden. Dazu wird beim Build der OpenAPI-Spec aus NestJS exportiert und daraus mit [orval](https://orval.dev) ein vollständig typisierter HTTP-Client generiert. Änderungen an DTOs oder Endpoints werden so direkt im Frontend sichtbar — Tippfehler in Request- oder Response-Strukturen werden zur Kompilierzeit erkannt.
+
+### LLM-Integration über OpenRouter
+
+Statt direkt an einen einzelnen Anbieter gebunden zu sein, wird [OpenRouter](https://openrouter.ai) als Proxy eingesetzt. Das erlaubt es, das Modell flexibel zu wechseln, ohne den Code anzufassen — lediglich der Modellname in `openai.service.ts` muss geändert werden. Als SDK wird das Vercel AI SDK (`ai`) verwendet, das eine einheitliche Schnittstelle über verschiedene Anbieter hinweg bietet.
+
+### Gesprächsverlauf im Cache
+
+Der Chatverlauf wird pro User in Redis (oder im In-Memory-Fallback) gespeichert. Jede Nachricht wird mit der bisherigen History an das Modell übergeben, sodass Kontext über mehrere Nachrichten hinweg erhalten bleibt. Redis wurde gewählt, weil es einfach horizontal skalierbar ist und sich für kurzlebige Session-Daten eignet.
+
+### Testbarkeit
+
+Die Integrationstests greifen direkt auf das NestJS-Testmodul zu, ohne einen echten Server zu starten. Externe Abhängigkeiten (`CacheService`, `OpenAiService`) werden per `overrideProvider` durch leichtgewichtige In-Memory-Mocks ersetzt. So lassen sich Controller, Service und Validierung gemeinsam testen, ohne Netzwerk-Overhead oder Abhängigkeiten zu externen Diensten.
