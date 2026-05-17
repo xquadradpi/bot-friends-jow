@@ -10,6 +10,8 @@ apps/
   api-e2e/   Playwright E2E tests for the API
   ui/        Vue 3 frontend (Vite)
   ui-e2e/    Playwright E2E tests for the UI
+libs/
+  api-types/ Auto-generated TypeScript types from the OpenAPI spec
 ```
 
 ## Prerequisites
@@ -69,6 +71,48 @@ If `REDIS_URL` is not set, the app falls back to in-memory caching automatically
 
 ```bash
 docker run -d -p 6379:6379 redis:7-alpine
+```
+
+## Swagger & API types
+
+The API exposes a Swagger UI at `http://localhost:3000/api/docs` when running in development.
+
+### Generate TypeScript types for the UI
+
+Types are auto-generated from the OpenAPI spec into `libs/api-types` and importable as `@bot-friends-jow/api-types`.
+
+```bash
+npx nx run api-types:generate
+```
+
+This runs two steps automatically:
+1. `api:export-schema` — boots the NestJS app without listening and writes `openapi.json` to the workspace root
+2. `api-types:generate` — runs `openapi-typescript` to generate `libs/api-types/src/generated.ts`
+
+### Adding a DTO to the spec
+
+Decorate your DTO class with `@ApiProperty()` so it appears in the spec:
+
+```typescript
+import { ApiProperty } from '@nestjs/swagger';
+
+export class CreateUserDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  email: string;
+}
+```
+
+After adding DTOs, re-run `npx nx run api-types:generate`.
+
+### Using types in the UI
+
+```typescript
+import type { ApiSchemas } from '@bot-friends-jow/api-types';
+
+type User = ApiSchemas['CreateUserDto'];
 ```
 
 ## Building for production

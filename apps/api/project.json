@@ -65,6 +65,12 @@
       "options": {
         "passWithNoTests": true
       }
+    },
+    "export-schema": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node --project apps/api/tsconfig.app.json -r tsconfig-paths/register apps/api/src/export-schema.ts"
+      }
     }
   }
 }

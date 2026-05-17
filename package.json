@@ -28,6 +28,7 @@
     "@swc/helpers": "~0.5.18",
     "@types/jest": "~30.0.0",
     "@types/node": "20.19.9",
+    "@types/swagger-ui-express": "^4.1.8",
     "@typescript-eslint/parser": "^8.40.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitest/coverage-v8": "~4.1.0",
@@ -45,6 +46,7 @@
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "nx": "22.7.2",
+    "openapi-typescript": "^7.13.0",
     "prettier": "~3.6.2",
     "sass": "^1.70.0",
     "ts-jest": "^29.4.0",
@@ -63,10 +65,12 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/swagger": "^11.4.3",
     "axios": "^1.6.0",
     "cache-manager": "^7.2.8",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.0",
+    "swagger-ui-express": "^5.0.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   }
