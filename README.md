@@ -9,7 +9,6 @@ apps/
   api/       NestJS backend (port 3000, prefix /api)
   api-e2e/   Playwright E2E tests for the API
   ui/        Vue 3 frontend (Vite, port 4200)
-  ui-e2e/    Playwright E2E tests for the UI
 libs/
   api-types/ Auto-generated TypeScript types from the OpenAPI spec
   api-client/ Auto-generated typed HTTP client (orval)
