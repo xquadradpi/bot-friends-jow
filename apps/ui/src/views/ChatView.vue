@@ -60,8 +60,7 @@ async function sendMessage() {
         message: res.data.message,
         timestamp: new Date().toISOString(),
       });
-    }
-    if (res.status === 422) {
+    } else if (res.status === 422) {
       messages.value.push({
         role: 'assistant',
         message: 'Dateneingabe fehlehaft.',

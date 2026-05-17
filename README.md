@@ -7,7 +7,6 @@ An NX monorepo with a NestJS API (`api`) and a Vue 3 chat frontend (`ui`). The c
 ```
 apps/
   api/       NestJS backend (port 3000, prefix /api)
-  api-e2e/   Playwright E2E tests for the API
   ui/        Vue 3 frontend (Vite, port 4200)
 libs/
   api-types/ Auto-generated TypeScript types from the OpenAPI spec
@@ -114,14 +113,6 @@ const response = await chatControllerSendMessage({
 });
 ```
 
-### Using raw types only
-
-```typescript
-import type { ApiSchemas } from '@bot-friends-jow/api-types';
-
-type HistoryEntry = ApiSchemas['ChatHistoryDto'];
-```
-
 ## Building for production
 
 ```bash
@@ -137,20 +128,17 @@ Output is written to `dist/apps/<app-name>`.
 
 ## Testing
 
+Integration tests live in `apps/api/src/**/*.spec.ts` and use the NestJS testing module with supertest — no running server required.
+
 ```bash
 # Run all tests
 npx nx run-many -t test --all
 
-# Test a specific app
+# Run API tests only
 npx nx test api
-npx nx test ui
-```
 
-## E2E tests
-
-```bash
-npx nx e2e api-e2e
-npx nx e2e ui-e2e
+# Run with coverage
+npx nx test api --coverage
 ```
 
 ## NX commands
