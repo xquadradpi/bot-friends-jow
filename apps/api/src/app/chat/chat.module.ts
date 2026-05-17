@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 
-import { CacheService } from '../shared/services/cache.service';
-import { OpenAiService } from '../shared/services/openai.service';
+import { SharedModule } from '../shared/shared.module';
 import { ChatController } from './chat.controller';
 import { ChatService } from './chat.service';
 
 @Module({
+  imports: [SharedModule],
   controllers: [ChatController],
-  providers: [CacheService, OpenAiService, ChatService],
+  providers: [ChatService],
 })
 export class ChatModule {}

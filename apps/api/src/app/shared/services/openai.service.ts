@@ -11,14 +11,6 @@ const openrouter = createOpenAI({
 export class OpenAiService {
   private readonly model = openrouter.chat('gpt-oss-20b:free');
 
-  async generateText(prompt: string): Promise<string> {
-    const { text } = await generateText({
-      model: this.model,
-      prompt,
-    });
-    return text;
-  }
-
   async chat(messages: ModelMessage[]): Promise<string> {
     const { text } = await generateText({
       model: this.model,
