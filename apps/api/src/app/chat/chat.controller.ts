@@ -49,7 +49,7 @@ export class ChatController {
   @ApiOkResponse({ type: ChatResponseDto })
   @Post()
   async sendMessage(@Body() messageDto: ChatMessageDto) {
-    const result = await this.chatService.sendMessage(messageDto.message);
+    const result = await this.chatService.sendMessage(messageDto.userId, messageDto.message);
     const type = result.type;
 
     switch (type) {

@@ -1,10 +1,15 @@
-import { openai } from '@ai-sdk/openai';
+import { createOpenAI } from '@ai-sdk/openai';
 import { Injectable } from '@nestjs/common';
 import { generateText, ModelMessage } from 'ai';
 
+const openrouter = createOpenAI({
+  baseURL: 'https://openrouter.ai/api/v1',
+  apiKey: process.env.OPENROUTER_API_KEY,
+});
+
 @Injectable()
 export class OpenAiService {
-  private readonly model = openai('gpt-4o');
+  private readonly model = openrouter('google/gemini-2.0-flash-exp:free');
 
   async generateText(prompt: string): Promise<string> {
     const { text } = await generateText({
@@ -17,6 +22,8 @@ export class OpenAiService {
   async chat(messages: ModelMessage[]): Promise<string> {
     const { text } = await generateText({
       model: this.model,
+      system: 'You are a friendly chatbot named Alfons. Respond in the language of the message ( default German ).' +
+        'Only respond with pure text, no MARKDOWN or JSON or anything else.',
       messages,
     });
     return text;

@@ -155,3 +155,7 @@ npx nx show project api --web
 # Visualize the project graph
 npx nx graph
 ```
+
+
+## Keys
+openrouter.ai key: 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
