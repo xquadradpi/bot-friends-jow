@@ -88,35 +88,36 @@ function handleKeydown(event: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="chat">
-    <header class="chat__header">
-      <span class="chat__title">Alfons</span>
-    </header>
+  <div class="chat-wrapper">
+    <div class="chat">
+      <header class="chat__header">
+        <span class="chat__header-icon">🤖</span>
+        <span class="chat__title">BotFriends Chat</span>
+      </header>
 
-    <div ref="messagesContainer" class="chat__messages">
-      <div v-if="messages.length === 0" class="chat__empty">
-        Schreib eine Nachricht um das Gespräch zu starten.
-      </div>
+      <div ref="messagesContainer" class="chat__messages">
+        <div v-if="messages.length === 0" class="chat__empty">
+          Schreib eine Nachricht um das Gespräch zu starten.
+        </div>
 
-      <div
-        v-for="(msg, i) in messages"
-        :key="i"
-        class="chat__message"
-        :class="
-          msg.role === 'user'
-            ? 'chat__message--user'
-            : 'chat__message--assistant'
-        "
-      >
-        <span class="chat__bubble">{{ msg.message }}</span>
-      </div>
+        <div
+          v-for="(msg, i) in messages"
+          :key="i"
+          class="chat__message"
+          :class="msg.role === 'user' ? 'chat__message--user' : 'chat__message--assistant'"
+        >
+          <div class="chat__avatar chat__avatar--user" v-if="msg.role === 'user'">👤</div>
+          <div class="chat__avatar chat__avatar--bot" v-else>🤖</div>
+          <span class="chat__bubble">{{ msg.message }}</span>
+        </div>
 
-      <div v-if="loading" class="chat__message chat__message--assistant">
-        <span class="chat__bubble chat__bubble--loading">
-          <span class="dot" /><span class="dot" /><span class="dot" />
-        </span>
+        <div v-if="loading" class="chat__message chat__message--assistant">
+          <div class="chat__avatar chat__avatar--bot">🤖</div>
+          <span class="chat__bubble chat__bubble--loading">
+            <span class="dot" /><span class="dot" /><span class="dot" />
+          </span>
+        </div>
       </div>
-    </div>
 
     <form class="chat__input-bar" @submit.prevent="sendMessage">
       <textarea
@@ -134,6 +135,7 @@ function handleKeydown(event: KeyboardEvent) {
         Senden
       </button>
     </form>
+    </div>
   </div>
 </template>
 

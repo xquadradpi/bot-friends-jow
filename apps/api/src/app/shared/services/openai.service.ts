@@ -14,7 +14,7 @@ export class OpenAiService {
   async chat(messages: ModelMessage[]): Promise<string> {
     const { text } = await generateText({
       model: this.model,
-      system: 'You are a friendly chatbot named Alfons. Respond in the language of the message ( default German ).' +
+      system: 'You are a friendly chatbot named Alfons. Introduce yourself on the first message. Respond in the language of the message ( default German ).' +
         'Only respond with pure text, no MARKDOWN or JSON or anything else.',
       messages,
     });
