@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder,SwaggerModule } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
 

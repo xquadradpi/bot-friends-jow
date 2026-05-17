@@ -49,12 +49,12 @@ export default [
       'unused-imports': unusedImports,
     },
     rules: {
-      // Sort import declarations alphabetically by module path
+      // Sort imports alphabetically by source path.
+      // NOTE: simple-import-sort uses a case-insensitive collator for specifiers
+      // within imports (e.g. { generateText, ModelMessage } — g < m). PascalCase-first
+      // within braces must be maintained manually.
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
-      // Sort named members within { } — case-sensitive so PascalCase (classes)
-      // sort before camelCase (functions) due to ASCII ordering (A-Z < a-z)
-      'sort-imports': ['error', { ignoreDeclarationSort: true, ignoreCase: false }],
 
       // Remove unused imports automatically
       'unused-imports/no-unused-imports': 'error',
@@ -65,6 +65,9 @@ export default [
 
       // Spaces inside import braces: import { Foo } from '...'
       'object-curly-spacing': ['error', 'always'],
+
+      // Space after comma: import { A, B, C } from '...'
+      'comma-spacing': ['error', { before: false, after: true }],
     },
   },
 ];

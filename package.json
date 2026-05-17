@@ -41,6 +41,7 @@
     "eslint-plugin-playwright": "^1.6.2",
     "eslint-plugin-rxjs": "^5.0.3",
     "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "eslint-plugin-vue": "^9.16.1",
     "jest": "~30.3.0",
@@ -63,12 +64,14 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.64",
     "@keyv/redis": "^5.1.6",
     "@nestjs/cache-manager": "^3.1.2",
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/swagger": "^11.4.3",
+    "ai": "^6.0.184",
     "axios": "^1.6.0",
     "cache-manager": "^7.2.8",
     "class-transformer": "^0.5.1",
