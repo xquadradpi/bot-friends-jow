@@ -1,13 +1,90 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
+import {
+  chatControllerGetHistory,
+  chatControllerSendMessage,
+} from '@bot-friends-jow/api-client';
+import type { ChatHistoryDto } from '@bot-friends-jow/api-client';
 
-interface Message {
-  role: 'user' | 'assistant';
-  text: string;
+const userId = ref('');
+const messages = ref<ChatHistoryDto[]>([]);
+const input = ref('');
+const loading = ref(false);
+const messagesContainer = ref<HTMLElement | null>(null);
+
+onMounted(async () => {
+  const stored = localStorage.getItem('userId');
+  if (stored) {
+    userId.value = stored;
+  } else {
+    const newId = crypto.randomUUID();
+    localStorage.setItem('userId', newId);
+    userId.value = newId;
+  }
+
+  const res = await chatControllerGetHistory(userId.value);
+  if (res.status === 200) {
+    messages.value = res.data;
+    await scrollToBottom();
+  }
+});
+
+async function scrollToBottom() {
+  await nextTick();
+  if (messagesContainer.value) {
+    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+  }
 }
 
-const messages = ref<Message[]>([]);
-const input = ref('');
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text || loading.value) return;
+
+  messages.value.push({
+    role: 'user',
+    message: text,
+    timestamp: new Date().toISOString(),
+  });
+  input.value = '';
+  loading.value = true;
+  await scrollToBottom();
+
+  try {
+    const res = await chatControllerSendMessage({
+      message: text,
+      userId: userId.value,
+    });
+    if (res.status === 200) {
+      messages.value.push({
+        role: 'assistant',
+        message: res.data.message,
+        timestamp: new Date().toISOString(),
+      });
+    } else {
+      messages.value.push({
+        role: 'assistant',
+        message: 'Fehler beim Senden der Nachricht.',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  } catch {
+    messages.value.push({
+      role: 'assistant',
+      message: 'Fehler beim Senden der Nachricht.',
+      timestamp: new Date().toISOString(),
+    });
+  } finally {
+    loading.value = false;
+    await scrollToBottom();
+  }
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
 </script>
 
 <template>
@@ -16,7 +93,7 @@ const input = ref('');
       <span class="chat__title">Alfons</span>
     </header>
 
-    <div class="chat__messages">
+    <div ref="messagesContainer" class="chat__messages">
       <div v-if="messages.length === 0" class="chat__empty">
         Schreib eine Nachricht um das Gespräch zu starten.
       </div>
@@ -25,135 +102,39 @@ const input = ref('');
         v-for="(msg, i) in messages"
         :key="i"
         class="chat__message"
-        :class="msg.role === 'user' ? 'chat__message--user' : 'chat__message--assistant'"
+        :class="
+          msg.role === 'user'
+            ? 'chat__message--user'
+            : 'chat__message--assistant'
+        "
       >
-        <span class="chat__bubble">{{ msg.text }}</span>
+        <span class="chat__bubble">{{ msg.message }}</span>
+      </div>
+
+      <div v-if="loading" class="chat__message chat__message--assistant">
+        <span class="chat__bubble chat__bubble--loading">
+          <span class="dot" /><span class="dot" /><span class="dot" />
+        </span>
       </div>
     </div>
 
-    <form class="chat__input-bar" @submit.prevent>
+    <form class="chat__input-bar" @submit.prevent="sendMessage">
       <textarea
         v-model="input"
         class="chat__input"
         placeholder="Nachricht schreiben…"
         rows="1"
+        @keydown="handleKeydown"
       />
-      <button class="chat__send" type="submit" :disabled="!input.trim()">
+      <button
+        class="chat__send"
+        type="submit"
+        :disabled="loading || !input.trim()"
+      >
         Senden
       </button>
     </form>
   </div>
 </template>
 
-<style scoped lang="scss">
-.chat {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  max-width: 720px;
-  margin: 0 auto;
-
-  &__header {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    background: #fff;
-  }
-
-  &__title {
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-
-  &__messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    background: #f9fafb;
-  }
-
-  &__empty {
-    text-align: center;
-    color: #9ca3af;
-    margin: auto;
-  }
-
-  &__message {
-    display: flex;
-
-    &--user {
-      justify-content: flex-end;
-
-      .chat__bubble {
-        background: #2563eb;
-        color: #fff;
-      }
-    }
-
-    &--assistant {
-      justify-content: flex-start;
-
-      .chat__bubble {
-        background: #fff;
-        color: #111827;
-        border: 1px solid #e5e7eb;
-      }
-    }
-  }
-
-  &__bubble {
-    max-width: 75%;
-    padding: 0.6rem 1rem;
-    border-radius: 1rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  &__input-bar {
-    display: flex;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #e5e7eb;
-    background: #fff;
-  }
-
-  &__input {
-    flex: 1;
-    resize: none;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    padding: 0.6rem 0.875rem;
-    font-family: inherit;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    outline: none;
-
-    &:focus {
-      border-color: #2563eb;
-    }
-  }
-
-  &__send {
-    padding: 0.6rem 1.25rem;
-    background: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 0.95rem;
-    cursor: pointer;
-    white-space: nowrap;
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    &:not(:disabled):hover {
-      background: #1d4ed8;
-    }
-  }
-}
-</style>
+<style scoped src="./ChatView.scss" />

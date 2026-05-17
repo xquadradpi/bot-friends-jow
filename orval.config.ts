@@ -10,6 +10,7 @@ export default defineConfig({
       client: 'fetch',
       baseUrl: 'http://localhost:3000',
       prettier: true,
+      indexFiles: true,
     },
   },
 });

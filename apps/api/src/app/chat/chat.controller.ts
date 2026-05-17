@@ -1,17 +1,30 @@
-import { Body, Controller, Get, InternalServerErrorException, Param, Post } from '@nestjs/common';
-import { ApiBody, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiParam } from "@nestjs/swagger";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  InternalServerErrorException,
+  Param,
+  Post,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+} from '@nestjs/swagger';
 
-import { ChatHistoryDto } from "../dtos/chat-history.dto";
-import { ChatMessageDto } from "../dtos/chat-message.dto";
-import { ChatResponseDto } from "../dtos/chat-response.dto";
-import { ResultType } from "../shared/util";
-import { assertAllCasesHandled } from "../shared/util/exhaustiveness-check";
+import { ChatHistoryDto } from '../dtos/chat-history.dto';
+import { ChatMessageDto } from '../dtos/chat-message.dto';
+import { ChatResponseDto } from '../dtos/chat-response.dto';
+import { ResultType } from '../shared/util';
+import { assertAllCasesHandled } from '../shared/util/exhaustiveness-check';
 import { ChatService } from './chat.service';
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {
-  }
+  constructor(private readonly chatService: ChatService) {}
 
   @ApiOperation({
     summary: 'Get chat history for a user',
@@ -25,9 +38,7 @@ export class ChatController {
     type: String,
   })
   @Get('/history/:userId')
-  async getHistory(
-    @Param('userId') userId: string
-  ): Promise<ChatHistoryDto[]> {
+  async getHistory(@Param('userId') userId: string): Promise<ChatHistoryDto[]> {
     const result = await this.chatService.getHistory(userId);
     const type = result.type;
 
@@ -37,7 +48,7 @@ export class ChatController {
       case ResultType.InternalError:
         throw new InternalServerErrorException(result.error);
       default:
-        return assertAllCasesHandled(type)
+        return assertAllCasesHandled(type);
     }
   }
 
@@ -47,9 +58,13 @@ export class ChatController {
   @ApiBody({ type: ChatMessageDto })
   @ApiInternalServerErrorResponse()
   @ApiOkResponse({ type: ChatResponseDto })
+  @HttpCode(200)
   @Post()
   async sendMessage(@Body() messageDto: ChatMessageDto) {
-    const result = await this.chatService.sendMessage(messageDto.userId, messageDto.message);
+    const result = await this.chatService.sendMessage(
+      messageDto.userId,
+      messageDto.message
+    );
     const type = result.type;
 
     switch (type) {
@@ -58,7 +73,7 @@ export class ChatController {
       case ResultType.InternalError:
         throw new InternalServerErrorException(result.error);
       default:
-        return assertAllCasesHandled(type)
+        return assertAllCasesHandled(type);
     }
   }
 }
