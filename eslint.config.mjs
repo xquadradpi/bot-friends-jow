@@ -1,5 +1,4 @@
 import nx from '@nx/eslint-plugin';
-import rxjs from 'eslint-plugin-rxjs';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
 
@@ -33,6 +32,7 @@ export default [
       ],
     },
   },
+  // General rules for all JS/TS files
   {
     files: [
       '**/*.ts',
@@ -47,7 +47,6 @@ export default [
     plugins: {
       'simple-import-sort': simpleImportSort,
       'unused-imports': unusedImports,
-      rxjs,
     },
     rules: {
       // Sort import declarations alphabetically by module path
@@ -66,14 +65,6 @@ export default [
 
       // Spaces inside import braces: import { Foo } from '...'
       'object-curly-spacing': ['error', 'always'],
-
-      // RxJS best practices
-      'rxjs/no-async-subscribe': 'error',
-      'rxjs/no-ignored-observable': 'error',
-      'rxjs/no-ignored-subscription': 'warn',
-      'rxjs/no-nested-subscribe': 'error',
-      'rxjs/no-unbound-methods': 'error',
-      'rxjs/throw-error': 'error',
     },
   },
 ];

@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
-import { CacheModule } from '@nestjs/cache-manager';
 import KeyvRedis from '@keyv/redis';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+
 import { ChatModule } from './chat/chat.module';
 
 @Module({

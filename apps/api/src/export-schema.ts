@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { DocumentBuilder,SwaggerModule } from '@nestjs/swagger';
 import { writeFileSync } from 'fs';
 import { resolve } from 'path';
+
 import { AppModule } from './app/app.module';
 
 async function exportSchema() {
