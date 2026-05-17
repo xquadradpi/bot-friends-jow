@@ -3,7 +3,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 
 import { ChatModule } from './chat/chat.module';
-import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -14,7 +13,6 @@ import { SharedModule } from './shared/shared.module';
         : {}),
     }),
     ChatModule,
-    SharedModule,
   ],
   controllers: [],
   providers: [],

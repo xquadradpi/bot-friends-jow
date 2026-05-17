@@ -1,5 +1,5 @@
-import { Body, Controller, Get, InternalServerErrorException, Post } from '@nestjs/common';
-import { ApiBody, ApiInternalServerErrorResponse,ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { Body, Controller, Get, InternalServerErrorException, Param, Post } from '@nestjs/common';
+import { ApiBody, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiParam } from "@nestjs/swagger";
 
 import { ChatHistoryDto } from "../dtos/chat-history.dto";
 import { ChatMessageDto } from "../dtos/chat-message.dto";
@@ -17,8 +17,17 @@ export class ChatController {
     summary: 'Get chat history for a user',
   })
   @ApiOkResponse({ type: [ChatHistoryDto] })
-  @Get('/history')
-  async getHistory(userId: string): Promise<ChatHistoryDto[]> {
+  @ApiInternalServerErrorResponse()
+  @ApiParam({
+    name: 'userId',
+    description: 'The ID of the user whose chat history is being requested',
+    required: true,
+    type: String,
+  })
+  @Get('/history/:userId')
+  async getHistory(
+    @Param('userId') userId: string
+  ): Promise<ChatHistoryDto[]> {
     const result = await this.chatService.getHistory(userId);
     const type = result.type;
 
@@ -31,7 +40,6 @@ export class ChatController {
         return assertAllCasesHandled(type)
     }
   }
-
 
   @ApiOperation({
     summary: 'Send a chat message',
