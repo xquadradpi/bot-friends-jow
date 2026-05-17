@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { ChatHistoryDto, MessageRole } from '../dtos/chat-history.dto';
 import { ChatResponseDto } from '../dtos/chat-response.dto';
@@ -18,6 +18,8 @@ const HISTORY_TTL_MS = 60 * 60 * 1000; // 1 hour => set to 0 to cache forever
 
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+
   constructor(
     private readonly cacheService: CacheService,
     private readonly openAiService: OpenAiService,
@@ -30,13 +32,16 @@ export class ChatService {
         async () => [],
         HISTORY_TTL_MS,
       );
+      this.logger.log(`Loaded history for user ${userId}: ${history.length} messages`);
       return { type: ResultType.OK, value: history };
     } catch (error) {
+      this.logger.error(`Failed to load history for user ${userId}`, error);
       return { type: ResultType.InternalError, error: error as Error };
     }
   }
 
   async sendMessage(userId: string, message: string): Promise<ChatMessageResult> {
+    this.logger.log(`Sending message for user ${userId}`);
     try {
       const cacheKey = `chat:history:${userId}`;
 
@@ -55,6 +60,7 @@ export class ChatService {
       );
 
       const responseText = await this.openAiService.chat(modelMessages);
+      this.logger.log(`Received response for user ${userId}`);
 
       history.push({ role: MessageRole.ASSISTANT, message: responseText, timestamp: new Date() });
 
@@ -62,6 +68,7 @@ export class ChatService {
 
       return { type: ResultType.OK, value: { message: responseText } };
     } catch (error) {
+      this.logger.error(`Failed to send message for user ${userId}`, error);
       return { type: ResultType.InternalError, error: error as Error };
     }
   }

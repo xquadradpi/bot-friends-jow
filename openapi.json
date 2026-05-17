@@ -1,0 +1,136 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/chat/history/{userId}": {
+      "get": {
+        "operationId": "ChatController_getHistory",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "The ID of the user whose chat history is being requested",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatHistoryDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        },
+        "summary": "Get chat history for a user",
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/chat": {
+      "post": {
+        "operationId": "ChatController_sendMessage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatResponseDto"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": ""
+          }
+        },
+        "summary": "Send a chat message",
+        "tags": [
+          "Chat"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "bot-friends-jow API",
+    "description": "",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "ChatHistoryDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "timestamp": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "message",
+          "timestamp"
+        ]
+      },
+      "ChatMessageDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "userId"
+        ]
+      },
+      "ChatResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      }
+    }
+  }
+}
