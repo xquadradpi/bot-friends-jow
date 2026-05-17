@@ -39,8 +39,8 @@ npx nx add @nx/react
 Use the plugin's generator to create new projects. For example, to create a new React app or library:
 
 ```sh
-# Generate an app
-npx nx g @nx/react:app demo
+# Generate an apps
+npx nx g @nx/react:apps demo
 
 # Generate a library
 npx nx g @nx/react:lib some-lib
