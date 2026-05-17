@@ -9,7 +9,7 @@ const openrouter = createOpenAI({
 
 @Injectable()
 export class OpenAiService {
-  private readonly model = openrouter('google/gemini-2.0-flash-exp:free');
+  private readonly model = openrouter.chat('gpt-oss-20b:free');
 
   async generateText(prompt: string): Promise<string> {
     const { text } = await generateText({

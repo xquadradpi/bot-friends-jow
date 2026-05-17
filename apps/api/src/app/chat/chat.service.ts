@@ -48,10 +48,11 @@ export class ChatService {
 
       history.push({ role: MessageRole.USER, message, timestamp: new Date() });
 
-      const modelMessages = history.map((entry) => ({
-        role: entry.role as 'user' | 'assistant',
-        content: entry.message,
-      }));
+      const modelMessages = history.map((entry) =>
+        entry.role === MessageRole.USER
+          ? { role: 'user' as const, content: entry.message }
+          : { role: 'assistant' as const, content: entry.message },
+      );
 
       const responseText = await this.openAiService.chat(modelMessages);
 
