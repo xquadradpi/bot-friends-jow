@@ -13,6 +13,7 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 
 import { ChatHistoryDto } from '../dtos/chat-history.dto';
@@ -57,6 +58,7 @@ export class ChatController {
   })
   @ApiBody({ type: ChatMessageDto })
   @ApiInternalServerErrorResponse()
+  @ApiUnprocessableEntityResponse({ description: 'Invalid request data' })
   @ApiOkResponse({ type: ChatResponseDto })
   @HttpCode(200)
   @Post()

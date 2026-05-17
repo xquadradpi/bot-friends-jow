@@ -60,17 +60,24 @@ async function sendMessage() {
         message: res.data.message,
         timestamp: new Date().toISOString(),
       });
+    }
+    if (res.status === 422) {
+      messages.value.push({
+        role: 'assistant',
+        message: 'Dateneingabe fehlehaft.',
+        timestamp: new Date().toISOString(),
+      })
     } else {
       messages.value.push({
         role: 'assistant',
-        message: 'Fehler beim Senden der Nachricht.',
+        message: 'Fehler beim verarbeiten der Nachricht.',
         timestamp: new Date().toISOString(),
       });
     }
   } catch {
     messages.value.push({
       role: 'assistant',
-      message: 'Fehler beim Senden der Nachricht.',
+      message: 'Fehler beim verarbeiten der Nachricht.',
       timestamp: new Date().toISOString(),
     });
   } finally {
@@ -95,8 +102,14 @@ function handleKeydown(event: KeyboardEvent) {
         <span class="chat__title">BotFriends Chat</span>
       </header>
 
-      <div ref="messagesContainer" class="chat__messages">
-        <div v-if="messages.length === 0" class="chat__empty">
+      <div
+        ref="messagesContainer"
+        class="chat__messages"
+      >
+        <div
+          v-if="messages.length === 0"
+          class="chat__empty"
+        >
           Schreib eine Nachricht um das Gespräch zu starten.
         </div>
 
@@ -104,37 +117,59 @@ function handleKeydown(event: KeyboardEvent) {
           v-for="(msg, i) in messages"
           :key="i"
           class="chat__message"
-          :class="msg.role === 'user' ? 'chat__message--user' : 'chat__message--assistant'"
+          :class="
+            msg.role === 'user'
+              ? 'chat__message--user'
+              : 'chat__message--assistant'
+          "
         >
-          <div class="chat__avatar chat__avatar--user" v-if="msg.role === 'user'">👤</div>
-          <div class="chat__avatar chat__avatar--bot" v-else>🤖</div>
+          <div
+            v-if="msg.role === 'user'"
+            class="chat__avatar chat__avatar--user"
+          >
+            👤
+          </div>
+          <div
+            v-else
+            class="chat__avatar chat__avatar--bot"
+          >
+            🤖
+          </div>
           <span class="chat__bubble">{{ msg.message }}</span>
         </div>
 
-        <div v-if="loading" class="chat__message chat__message--assistant">
-          <div class="chat__avatar chat__avatar--bot">🤖</div>
+        <div
+          v-if="loading"
+          class="chat__message chat__message--assistant"
+        >
+          <div class="chat__avatar chat__avatar--bot">
+            🤖
+          </div>
           <span class="chat__bubble chat__bubble--loading">
             <span class="dot" /><span class="dot" /><span class="dot" />
           </span>
         </div>
       </div>
 
-    <form class="chat__input-bar" @submit.prevent="sendMessage">
-      <textarea
-        v-model="input"
-        class="chat__input"
-        placeholder="Nachricht schreiben…"
-        rows="1"
-        @keydown="handleKeydown"
-      />
-      <button
-        class="chat__send"
-        type="submit"
-        :disabled="loading || !input.trim()"
+      <form
+        class="chat__input-bar"
+        @submit.prevent="sendMessage"
       >
-        Senden
-      </button>
-    </form>
+        <textarea
+          v-model="input"
+          class="chat__input"
+          placeholder="Nachricht schreiben…"
+          rows="1"
+          @keydown="handleKeydown"
+        />
+        <button
+          class="chat__send"
+          type="submit"
+          :disabled="loading || !input.trim()"
+        >
+          Senden
+        </button>
+      </form>
     </div>
   </div>
 </template>

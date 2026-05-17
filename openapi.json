@@ -34,9 +34,7 @@
           }
         },
         "summary": "Get chat history for a user",
-        "tags": [
-          "Chat"
-        ]
+        "tags": ["Chat"]
       }
     },
     "/api/chat": {
@@ -64,14 +62,15 @@
               }
             }
           },
+          "422": {
+            "description": "Invalid request data"
+          },
           "500": {
             "description": ""
           }
         },
         "summary": "Send a chat message",
-        "tags": [
-          "Chat"
-        ]
+        "tags": ["Chat"]
       }
     }
   },
@@ -99,11 +98,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "role",
-          "message",
-          "timestamp"
-        ]
+        "required": ["role", "message", "timestamp"]
       },
       "ChatMessageDto": {
         "type": "object",
@@ -115,10 +110,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "message",
-          "userId"
-        ]
+        "required": ["message", "userId"]
       },
       "ChatResponseDto": {
         "type": "object",
@@ -127,9 +119,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "message"
-        ]
+        "required": ["message"]
       }
     }
   }

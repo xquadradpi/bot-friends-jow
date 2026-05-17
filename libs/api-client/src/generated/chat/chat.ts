@@ -7,105 +7,116 @@
 import type {
   ChatHistoryDto,
   ChatMessageDto,
-  ChatResponseDto
+  ChatResponseDto,
 } from '../models';
 
-
 export type chatControllerGetHistoryResponse200 = {
-  data: ChatHistoryDto[]
-  status: 200
-}
+  data: ChatHistoryDto[];
+  status: 200;
+};
 
 export type chatControllerGetHistoryResponse500 = {
-  data: void
-  status: 500
-}
-
-export type chatControllerGetHistoryResponseSuccess = (chatControllerGetHistoryResponse200) & {
-  headers: Headers;
-};
-export type chatControllerGetHistoryResponseError = (chatControllerGetHistoryResponse500) & {
-  headers: Headers;
+  data: void;
+  status: 500;
 };
 
-export type chatControllerGetHistoryResponse = (chatControllerGetHistoryResponseSuccess | chatControllerGetHistoryResponseError)
+export type chatControllerGetHistoryResponseSuccess =
+  chatControllerGetHistoryResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerGetHistoryResponseError =
+  chatControllerGetHistoryResponse500 & {
+    headers: Headers;
+  };
 
-export const getChatControllerGetHistoryUrl = (userId: string,) => {
+export type chatControllerGetHistoryResponse =
+  | chatControllerGetHistoryResponseSuccess
+  | chatControllerGetHistoryResponseError;
 
-
-
-
-  return `http://localhost:3000/api/chat/history/${userId}`
-}
+export const getChatControllerGetHistoryUrl = (userId: string) => {
+  return `http://localhost:3000/api/chat/history/${userId}`;
+};
 
 /**
  * @summary Get chat history for a user
  */
-export const chatControllerGetHistory = async (userId: string, options?: RequestInit): Promise<chatControllerGetHistoryResponse> => {
-
-  const res = await fetch(getChatControllerGetHistoryUrl(userId),
-  {
+export const chatControllerGetHistory = async (
+  userId: string,
+  options?: RequestInit
+): Promise<chatControllerGetHistoryResponse> => {
+  const res = await fetch(getChatControllerGetHistoryUrl(userId), {
     ...options,
-    method: 'GET'
-
-
-  }
-)
-
+    method: 'GET',
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: chatControllerGetHistoryResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as chatControllerGetHistoryResponse
-}
-
+  const data: chatControllerGetHistoryResponse['data'] = body
+    ? JSON.parse(body)
+    : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as chatControllerGetHistoryResponse;
+};
 
 export type chatControllerSendMessageResponse200 = {
-  data: ChatResponseDto
-  status: 200
-}
+  data: ChatResponseDto;
+  status: 200;
+};
+
+export type chatControllerSendMessageResponse422 = {
+  data: void;
+  status: 422;
+};
 
 export type chatControllerSendMessageResponse500 = {
-  data: void
-  status: 500
-}
-
-export type chatControllerSendMessageResponseSuccess = (chatControllerSendMessageResponse200) & {
-  headers: Headers;
-};
-export type chatControllerSendMessageResponseError = (chatControllerSendMessageResponse500) & {
-  headers: Headers;
+  data: void;
+  status: 500;
 };
 
-export type chatControllerSendMessageResponse = (chatControllerSendMessageResponseSuccess | chatControllerSendMessageResponseError)
+export type chatControllerSendMessageResponseSuccess =
+  chatControllerSendMessageResponse200 & {
+    headers: Headers;
+  };
+export type chatControllerSendMessageResponseError = (
+  | chatControllerSendMessageResponse422
+  | chatControllerSendMessageResponse500
+) & {
+  headers: Headers;
+};
+
+export type chatControllerSendMessageResponse =
+  | chatControllerSendMessageResponseSuccess
+  | chatControllerSendMessageResponseError;
 
 export const getChatControllerSendMessageUrl = () => {
-
-
-
-
-  return `http://localhost:3000/api/chat`
-}
+  return `http://localhost:3000/api/chat`;
+};
 
 /**
  * @summary Send a chat message
  */
-export const chatControllerSendMessage = async (chatMessageDto: ChatMessageDto, options?: RequestInit): Promise<chatControllerSendMessageResponse> => {
-
-  const res = await fetch(getChatControllerSendMessageUrl(),
-  {
+export const chatControllerSendMessage = async (
+  chatMessageDto: ChatMessageDto,
+  options?: RequestInit
+): Promise<chatControllerSendMessageResponse> => {
+  const res = await fetch(getChatControllerSendMessageUrl(), {
     ...options,
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(chatMessageDto)
-  }
-)
-
+    body: JSON.stringify(chatMessageDto),
+  });
 
   const body = [204, 205, 304].includes(res.status) ? null : await res.text();
 
-  const data: chatControllerSendMessageResponse['data'] = body ? JSON.parse(body) : {}
-  return { data, status: res.status, headers: res.headers } as chatControllerSendMessageResponse
-}
-
-
+  const data: chatControllerSendMessageResponse['data'] = body
+    ? JSON.parse(body)
+    : {};
+  return {
+    data,
+    status: res.status,
+    headers: res.headers,
+  } as chatControllerSendMessageResponse;
+};
